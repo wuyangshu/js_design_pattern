@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    /*作者：伍杨澍
+     *2017-07-03
+     *实现代理模式，在对象执行之前由其代理对象代为执行，实现深入的叫交互功能
+     */
+    var Flower = function (type, price) {
+      this.type = type;
+      this.price = price;
+    }
+    Flower.prototype.buy = function () {
+      console.log('您购买了' + this.type + ',' + '请付' + this.price + '元');
+    }
+    var flower = new Flower('rose', 99);
+    flower.buy();
+    //console.log(flower);
+    var wys = {
+      name: '伍杨澍',
+      age: 21,
+      city: '南昌',
+      sendFlower: function (target) {
+        target.receiveFlower();
+      }
+    }
+    var czj = {
+      name: 'czj',
+      age: 21,
+      city: '南昌',
+      receiveFlower: function () {
+        console.log('收到了花');
+      },
+      listenGoodMood: function (fn) {
+        console.log("心情不好");
+        setTimeout(function () {
+          console.log("心情好了，约约约！！！");
+          fn();
+        }, 5000);
+      }
+    }
+    var xiaohong = {
+      name: '小红',
+      nickname: '收花使者',
+      //接口
+      receiveFlower: function () {
+        czj.listenGoodMood(function () {
+          czj.receiveFlower();
+        });
+      }
+    }
+    wys.sendFlower(xiaohong);
+  </script>
+</body>
+</html>

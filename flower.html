@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>刻意练习-用js讲故事</title>
+</head>
+<body>
+  <script type="text/javascript">
+    //talk_js js的表现力
+    // 小明有关 追MM的故事
+    // 送花
+    // 类 Flower 类别，颜色
+    var Flower = function() {
+
+    }
+    var xiaoming = {
+      name: '小明',
+      age: 22,
+      //送谁?花
+      sendFlower: function(target) {
+        //花要买?
+        var flower = new Flower();
+        //送
+        target.receiveFlower(flower, this);
+      }
+    }
+    var xiaomei = {
+      name: '小美',
+      age: 21,
+      receiveFlower: function(flower, sender) {
+        console.log(this.name + '收到了' + sender.name + '的花');
+      }
+    }
+
+    //小红 代理模式
+    var xiaohong = {
+      receiveFlower: function(flower, sender){
+        //小明为什么找小红代理？
+        //小美的心情如何？
+        //小美是否有男朋友？
+        //
+        if(sender.name === '小明'){
+          console.log('明哥，我们在一起吧');
+        }else {
+          xiaoming.receiveFlower(flower, sender);
+        }
+
+        //xiaomei.receiveFlower(flower, sender);
+      }
+    }
+
+    //xiaoming.sendFlower(xiaomei);
+    xiaoming.sendFlower(xiaohong);
+  </script>
+
+</body>
+</html>
