@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>使用策略模式验证表单</title>
+</head>
+<body>
+<form action="http://www.baidu.com" method="post" id="registerForm">
+    请输入用户名
+    <input type="text" name="userName"/>
+     <br>
+    请输入密码
+    <input type="password" name="password"/>
+    <br>
+    请输入手机号码
+    <input type="text" name="phoneNumber"/>
+    <button>提交</button>
+</form>
+<script>
+// 命名空间
+var strategies = {
+    // errorMsg参数，提升了适用性
+    isNonEmpty: function (value, errorMsg) {
+        if (value === '') {
+            // 返回字符串true  错误信息
+            return errorMsg;
+        }
+    },
+    minLength: function (value, length, errorMsg) {
+        if (value.length < length) {
+            return errorMsg;
+        }
+    },
+    isMobile: function (value, errorMsg) {
+        if (!/^1[1|5|8|7|4|3][0-9]{9}$/.test(value)) {
+            return errorMsg;
+        }
+    }
+}
+var Validator = function() {
+    this.cache = [];
+}
+Validator.prototype.start = function() {
+    for(var i = 0, validatorFunc;
+     validatorFunc = this.cache[i++];) {
+        var msg = validatorFunc();
+        if (msg) {
+            return msg;
+        }
+    }
+}
+Validator.prototype.add = function(ele, rule, errorMsg) {
+    var arr = rule.split(':');
+    this.cache.push(function() {
+        // 规则
+        var strategy= arr.shift();
+        arr.unshift(ele.value);
+        arr.push(errorMsg);
+        return strategies[strategy].apply(ele, arr);
+    })
+}
+const registerForm =
+ document.getElementById('registerForm');
+function validateFunc () {
+    // 校验处理 分离出去
+    var validator = new Validator();
+    // 一个个去校验，
+    // 数组  遍历
+    validator.add(registerForm.userName,
+    'isNonEmpty', '用户名不能为空');
+    validator.add(registerForm.password,
+     'minLength:6', '密码长度不能少于6位');
+    validator.add(registerForm.phoneNumber,
+     'isMobile', '手机号码格式不正确');
+    var errorMsg = validator.start();
+    // 一个个去校验，
+    return errorMsg;
+}
+registerForm.onsubmit = function() {
+    // 一票规则 数组
+    var errorMsg = validateFunc();
+    if (errorMsg) {
+        alert(errorMsg);
+        return false;
+    }
+}
+
+// registerForm.onsubmit = function() {
+//     var username = registerForm.userName.value;
+//     var password = registerForm.password.value;
+//     var phone = registerForm.phoneNumber.value;
+//     alert([username ,  password, phone]);
+//
+//     var usernameMsg = strategies.isNonEmpty(username, '用户不能为空');
+//     if (usernameMsg){
+//       alert(usernameMsg);
+//       return false;
+//     }
+//     var passwordMsg = strategies.minLength(password, 6,'密码不能小于6位数');
+//     if (passwordMsg) {
+//       alert(passwordMsg);
+//       return false;
+//     }
+//    var phoneMsg = strategies.isMobile(phone, '手机号码格式不正确')
+//    if (phoneMsg) {
+//      alert(phoneMsg);
+//       return false;
+//     }
+// }
+
+
+</script>
+</body>
+</html>
